@@ -1,11 +1,20 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Alert from './components/Alert'
 import List from "./components/List";
 
+const getLocalStorage = ()=>{
+  let list = localStorage.getItem('list')
+  if(list){
+    return JSON.parse(localStorage.getItem('list'))
+  }
+  else{
+    return []
+  }
+}
 
 function App() {
   const [name, setName] = useState('')
-  const [list, setList] = useState([])
+  const [list, setList] = useState(getLocalStorage())
   const [isEditing, setIsEditing] = useState(false)
   const [editId, setEditId] = useState(null)
 
@@ -65,6 +74,11 @@ function App() {
     setName(specificItem.title)
 
   }
+
+  useEffect(() => {
+    localStorage.setItem('list',JSON.stringify(list))
+  }, [list])
+
   return (
     <section className="section-center">
       <form onSubmit={handleSubmit} className="grocery-form">
