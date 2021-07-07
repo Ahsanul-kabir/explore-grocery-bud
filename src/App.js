@@ -23,7 +23,17 @@ function App() {
     }
     else if (name && isEditing) {
       // editing
+      setList(list.map((item) => {
+        if (item.id === editId) {
+          return { ...item, title: name }
+        }
+        return item
+      }))
 
+      setName('')
+      setEditId(null)
+      setIsEditing(false)
+      showAlert(true, 'success', 'value change')
     }
     else {
       // show alert
@@ -35,18 +45,30 @@ function App() {
   }
 
   const showAlert = (show = false, type = '', msg = '') => {
-    setAlert({ show, type , msg})
+    setAlert({ show, type, msg })
   }
 
-  const clearList = ()=>{
+  const clearList = () => {
     showAlert(true, 'danger', 'empty list')
     setList([])
   }
 
+  const removeItem = (id) => {
+    showAlert(true, 'danger', 'item remove')
+    setList(list.filter((item) => item.id !== id))
+  }
+
+  const editItem = (id) => {
+    const specificItem = list.find((item) => item.id === id);
+    setIsEditing(true)
+    setEditId(id)
+    setName(specificItem.title)
+
+  }
   return (
     <section className="section-center">
       <form onSubmit={handleSubmit} className="grocery-form">
-        {alert.show && <Alert {...alert} removeAlert={showAlert} />}
+        {alert.show && <Alert {...alert} removeAlert={showAlert} list={list} />}
         <h3>Grocery Bird</h3>
         <div className="form-control">
           <input type="text" className='grocery' placeholder='e.g. eggs'
@@ -62,7 +84,7 @@ function App() {
       {
         list.length > 0 && (
           <div className="grocery-container">
-            <List items={list} />
+            <List items={list} removeItem={removeItem} editItem={editItem} />
             <button className='clear-btn' onClick={clearList}>Clear Items</button>
           </div>
         )
